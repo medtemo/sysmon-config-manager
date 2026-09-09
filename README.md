@@ -4,6 +4,16 @@ A browser-based UI for loading, editing, validating, and applying Sysmon XML
 configuration files — Flask backend + a modern HTML/CSS/JS frontend (no
 build step, no framework, just plain JS).
 
+## Screenshots
+
+| Rule editor | Validation |
+|---|---|
+| ![Rule editor showing a categorized sidebar and populated rule table](docs/screenshots/main-view.png) | ![Validation results panel with a schema-version mismatch warning](docs/screenshots/validation.png) |
+
+| XML preview | Global settings |
+|---|---|
+| ![Live-generated XML preview panel](docs/screenshots/xml-preview.png) | ![Global settings modal with hash algorithms, DNS lookup, and archive directory options](docs/screenshots/global-settings.png) |
+
 ## Setup (WSL / Linux / macOS / Windows)
 
 ```bash
