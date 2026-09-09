@@ -8,11 +8,11 @@ build step, no framework, just plain JS).
 
 | Rule editor | Validation |
 |---|---|
-| ![Rule editor showing a categorized sidebar and populated rule table](docs/screenshots/main-view.png) | ![Validation results panel with a schema-version mismatch warning](docs/screenshots/validation.png) |
+| ![Rule editor with a large real-world config (2000+ rules) showing the categorized sidebar and populated rule table](docs/screenshots/main-view.png) | ![Validation results panel flagging single-filter nested groups as warnings](docs/screenshots/validation.png) |
 
-| XML preview | Global settings |
+| Change tracking | Global settings |
 |---|---|
-| ![Live-generated XML preview panel](docs/screenshots/xml-preview.png) | ![Global settings modal with hash algorithms, DNS lookup, and archive directory options](docs/screenshots/global-settings.png) |
+| ![Changes panel showing added rules and a new nested group, each with a revert button](docs/screenshots/changes.png) | ![Global settings modal with hash algorithms, DNS lookup, and archive directory options](docs/screenshots/global-settings.png) |
 
 ## Setup (WSL / Linux / macOS / Windows)
 
