@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sysmon Config Manager</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7" rx="1.5" fill="currentColor" fill-opacity="0.2"/>
+        <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+        <path d="M16 6.3 L17.3 7.6 L19.7 4.7" stroke-width="1.6"/>
+        <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+        <path d="M14 17.5 h7 M17.5 14 v7" stroke-width="1.5"/>
+      </svg>
+    </span>
+    <span class="brand-name">Sysmon Config Manager</span>
+    <span id="fileLabel" class="file-label">untitled</span>
+    <div class="schema-indicator" title="Active Sysmon schema — constrains which fields/conditions/event types are offered">
+      <span class="schema-badge-label">Active Schema:</span>
+      <div class="dropdown" id="schemaMenuDropdown">
+        <button class="btn" id="btnSchemaMenu"></button>
+        <div class="dropdown-menu" id="schemaMenuList" hidden></div>
+      </div>
+      <span class="schema-mismatch-badge" id="schemaMismatchBadge" hidden>⚠</span>
+      <button class="btn btn-sm" id="btnUploadSchema" title="Upload a custom `sysmon -s` schema export">Upload…</button>
+      <input type="file" id="schemaFileInput" accept=".xml" hidden>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <button class="btn btn-outline" id="btnGlobalSettings" title="Global Sysmon settings (HashAlgorithms, CheckRevocation, DnsLookup, ArchiveDirectory)">Settings</button>
+    <div class="dropdown" id="fileMenuDropdown">
+      <button class="btn" id="btnFileMenu">File ▾</button>
+      <div class="dropdown-menu" id="fileMenuList" hidden>
+        <button class="dropdown-item" id="miNew">New</button>
+        <button class="dropdown-item" id="miClose">Close</button>
+        <button class="dropdown-item" id="miOpen">Open…</button>
+        <div class="dropdown-sep"></div>
+        <button class="dropdown-item" id="miSave">Save</button>
+        <button class="dropdown-item" id="miSaveAs">Save As…</button>
+        <div class="dropdown-sep"></div>
+        <button class="dropdown-item" id="miDownload">Download</button>
+        <button class="dropdown-item" id="miExportArchive">Export Bundle…</button>
+      </div>
+      <input type="file" id="fileInput" accept=".xml" hidden>
+    </div>
+    <button class="btn btn-outline" id="btnValidate" title="Validate the current config">Validate</button>
+    <button class="btn btn-outline" id="btnDiff" title="Show changes since this file was opened">
+      Changes <span id="diffCount" class="count-pill" hidden>0</span>
+    </button>
+    <button class="btn btn-outline" id="btnApply" title="Accept the current state as the new baseline (resets the Changes count - does not touch your OS or the Sysmon service)">Apply Changes</button>
+    <button class="icon-btn" id="btnHelp" title="Help &amp; manuals">?</button>
+    <button class="icon-btn" id="btnTheme" title="Toggle light/dark theme">◐</button>
+  </div>
+</header>
+
+<main class="content">
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-search">
+      <input type="search" id="sidebarFilter" placeholder="Filter events…">
+    </div>
+    <div class="event-tree" id="eventTree"></div>
+  </nav>
+  <div class="pane-divider" id="sidebarDivider">
+    <button class="divider-toggle" id="sidebarDividerToggle" title="Collapse/expand event list">‹</button>
+  </div>
+
+  <section class="panel rules-panel">
+    <div class="panel-header">
+      <h2 id="tagTitle">ProcessCreate</h2>
+      <p id="tagDesc" class="muted"></p>
+      <div class="panel-toolbar">
+        <div class="segmented" id="onmatchFilter">
+          <button class="segment active" data-value="all">All</button>
+          <button class="segment" data-value="include">Include</button>
+          <button class="segment" data-value="exclude">Exclude</button>
+        </div>
+        <input type="search" id="searchBox" placeholder="Filter rules…">
+        <button class="btn btn-outline" id="btnToggleFilterRow" title="Show/hide per-column filters">Columns</button>
+        <button class="btn" id="btnAddGroup" title="Create a nested AND/OR rule group">+ Add Group</button>
+        <button class="btn btn-primary" id="btnAddRule">+ Add Rule</button>
+      </div>
+      <div id="filterRow" class="filter-toolbar" hidden>
+        <div class="ft-cell"></div>
+        <div class="ft-cell">
+          <select data-filter-col="onmatch">
+            <option value="">Any</option>
+            <option value="include">include</option>
+            <option value="exclude">exclude</option>
+          </select>
+        </div>
+        <div class="ft-cell"><input type="text" data-filter-col="field" placeholder="Filter…"></div>
+        <div class="ft-cell"><input type="text" data-filter-col="condition" placeholder="Filter…"></div>
+        <div class="ft-cell ft-value"><input type="text" data-filter-col="value" placeholder="Filter…"></div>
+        <div class="ft-cell"><input type="text" data-filter-col="technique" placeholder="Filter…"></div>
+        <div class="ft-cell"><input type="text" data-filter-col="comment" placeholder="Filter…"></div>
+        <div class="ft-cell">
+          <select data-filter-col="status">
+            <option value="">Any</option>
+            <option value="changed">All Changes</option>
+            <option value="added">Added</option>
+            <option value="modified">Modified</option>
+            <option value="deleted">Deleted</option>
+            <option value="unchanged">Unchanged</option>
+          </select>
+        </div>
+        <div class="ft-cell ft-actions"><button class="btn btn-sm" id="clearColumnFilters" title="Clear all column filters">Clear</button></div>
+      </div>
+    </div>
+    <div class="rules-header-wrap">
+      <table id="rulesHeaderTable">
+        <thead>
+          <tr id="headerRow">
+            <th>Group<span class="col-resizer"></span></th>
+            <th data-col="onmatch">Match<span class="sort-ind"></span><span class="col-resizer"></span></th>
+            <th data-col="field">Field<span class="sort-ind"></span><span class="col-resizer"></span></th>
+            <th data-col="condition">Condition<span class="sort-ind"></span><span class="col-resizer"></span></th>
+            <th data-col="value">Value<span class="sort-ind"></span><span class="col-resizer"></span></th>
+            <th data-col="technique">Technique<span class="sort-ind"></span><span class="col-resizer"></span></th>
+            <th data-col="comment">Comment<span class="sort-ind"></span><span class="col-resizer"></span></th>
+            <th data-col="status">Status<span class="sort-ind"></span><span class="col-resizer"></span></th>
+            <th class="col-actions-header"></th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+    <div class="table-wrap">
+      <table id="rulesTable">
+        <colgroup>
+          <col style="width:11%"><col style="width:8%"><col style="width:11%"><col style="width:9%">
+          <col><col style="width:12%"><col style="width:10%"><col style="width:10%"><col style="width:148px">
+        </colgroup>
+        <tbody id="rulesTbody"></tbody>
+      </table>
+      <p id="emptyState" class="empty-state" hidden>No flat rules yet for this event type.</p>
+      <button class="scroll-top-btn" id="btnScrollTop" title="Scroll to top" hidden>↑</button>
+    </div>
+  </section>
+
+  <div class="pane-divider" id="sidePanelDivider">
+    <button class="divider-toggle" id="sidePanelDividerToggle" title="Collapse/expand side panel">›</button>
+  </div>
+  <section class="panel side-panel" id="sidePanel">
+    <div class="side-tabs">
+      <button class="side-tab active" data-side="changes">Changes</button>
+      <button class="side-tab" data-side="validate">Validation</button>
+      <button class="side-tab" data-side="preview">XML Preview</button>
+    </div>
+    <pre id="previewBox" class="code-box" hidden></pre>
+    <div id="validateBox" class="validate-box" hidden><p class="muted">Click Validate to check this configuration.</p></div>
+    <div id="changesPanel" class="changes-panel">
+      <div class="changes-toolbar">
+        <input type="search" id="changesSearchBox" placeholder="Filter changes…">
+      </div>
+      <div id="changesBox" class="validate-box"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="statusbar">
+  <span id="statusMessage">Ready.</span>
+  <span id="statusStats" class="status-stats"></span>
+</footer>
+
+<!-- Add / Edit rule modal -->
+<div class="modal-overlay" id="ruleModalOverlay" hidden>
+  <div class="modal">
+    <h3 id="ruleModalTitle">Add Rule</h3>
+    <div class="form-grid">
+      <label class="bucket-row">Rule group name</label>
+      <input list="groupNames" id="fGroup" class="bucket-row" placeholder="(default)">
+      <datalist id="groupNames"></datalist>
+
+      <label class="bucket-row">Match type</label>
+      <div class="radio-row bucket-row">
+        <label class="radio"><input type="radio" name="onmatch" value="exclude" checked> exclude</label>
+        <label class="radio"><input type="radio" name="onmatch" value="include"> include</label>
+      </div>
+
+      <label>Field</label>
+      <select id="fField"></select>
+
+      <label>Condition</label>
+      <select id="fCondition"></select>
+
+      <label>Value</label>
+      <input type="text" id="fValue" placeholder="e.g. C:\Windows\system32\conhost.exe">
+
+      <label>Technique / label</label>
+      <input type="text" id="fName" placeholder="e.g. technique_id=T1055,technique_name=Process Injection">
+
+      <label>Comment</label>
+      <input type="text" id="fComment" placeholder="optional note">
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="ruleCancelBtn">Cancel</button>
+      <button class="btn btn-primary" id="ruleSaveBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Templates browser modal -->
+<div class="modal-overlay" id="templatesModalOverlay" hidden>
+  <div class="modal modal-wide">
+    <h3>Detection Templates</h3>
+    <p class="muted">Built-in, offline MITRE ATT&amp;CK-mapped starting points. Nothing is inserted until you confirm.</p>
+    <div class="template-layout">
+      <div class="template-list" id="templateList"></div>
+      <div class="template-detail" id="templateDetail">
+        <p class="muted">Select a template to preview it.</p>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="templatesCloseBtn">Close</button>
+      <button class="btn btn-primary" id="templateInsertBtn" disabled>Insert</button>
+    </div>
+  </div>
+</div>
+
+<!-- Save / Open path modal -->
+<div class="modal-overlay" id="pathModalOverlay" hidden>
+  <div class="modal">
+    <h3 id="pathModalTitle">Save config</h3>
+    <div class="form-grid">
+      <label>Server-side path</label>
+      <input type="text" id="pathInput" placeholder="/home/user/sysmonconfig.xml">
+    </div>
+    <p class="muted small">This path is resolved on the machine running the Flask server (useful when it's the same machine, e.g. this app running locally in WSL).</p>
+    <div class="modal-actions">
+      <button class="btn" id="pathCancelBtn">Cancel</button>
+      <button class="btn btn-primary" id="pathConfirmBtn">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Group modal -->
+<div class="modal-overlay" id="groupModalOverlay" hidden>
+  <div class="modal">
+    <h3 id="groupModalTitle">Add Nested Rule Group</h3>
+    <p class="muted small" id="groupModalHint">Creates an empty AND/OR sub-group under the current event type. Add filters to it afterward with "+ Add rule to group".</p>
+    <div class="form-grid">
+      <label>Label (optional)</label>
+      <input type="text" id="groupNameInput" placeholder="e.g. Eventviewer Bypass UAC">
+
+      <label>Relation</label>
+      <div class="radio-row">
+        <label class="radio"><input type="radio" name="groupRelation" value="and" checked> AND (all must match)</label>
+        <label class="radio"><input type="radio" name="groupRelation" value="or"> OR (any must match)</label>
+      </div>
+
+      <label>Match type</label>
+      <div class="radio-row">
+        <label class="radio"><input type="radio" name="groupOnmatch" value="exclude" checked> exclude</label>
+        <label class="radio"><input type="radio" name="groupOnmatch" value="include"> include</label>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="groupCancelBtn">Cancel</button>
+      <button class="btn btn-primary" id="groupSaveBtn">Create</button>
+    </div>
+  </div>
+</div>
+
+<!-- Global Settings modal -->
+<div class="modal-overlay" id="settingsModalOverlay" hidden>
+  <div class="modal">
+    <h3>Global Settings</h3>
+    <p class="muted small">These apply to the whole config file (the top-level &lt;Sysmon&gt; elements) - not a specific rule or event type.</p>
+    <div class="form-grid settings-form-grid">
+      <label>Hash Algorithms</label>
+      <div class="checkbox-row" id="hashAlgoRow">
+        <label class="checkbox"><input type="checkbox" id="hashAll" value="*"> All (*)</label>
+        <label class="checkbox"><input type="checkbox" class="hash-individual" value="MD5"> MD5</label>
+        <label class="checkbox"><input type="checkbox" class="hash-individual" value="SHA1"> SHA1</label>
+        <label class="checkbox"><input type="checkbox" class="hash-individual" value="SHA256"> SHA256</label>
+        <label class="checkbox"><input type="checkbox" class="hash-individual" value="IMPHASH"> IMPHASH</label>
+      </div>
+
+      <label>Check Revocation</label>
+      <div class="radio-row">
+        <label class="radio"><input type="radio" name="checkRevocation" value="true"> True</label>
+        <label class="radio"><input type="radio" name="checkRevocation" value="false" checked> False</label>
+      </div>
+      <div></div>
+      <p class="muted small setting-hint">Verifies digital signatures against a certificate revocation list. May impact performance.</p>
+
+      <label>DNS Lookup</label>
+      <select id="dnsLookupSelect">
+        <option value="">(not set — Sysmon default applies)</option>
+        <option value="true">True</option>
+        <option value="false">False</option>
+      </select>
+      <div></div>
+      <p class="muted small setting-hint">Resolves hostnames for network connection events. Sysmon's own default is True when unset.</p>
+
+      <label>Archive Directory</label>
+      <input type="text" id="archiveDirInput" placeholder="Sysmon">
+      <div></div>
+      <p class="muted small setting-hint">Folder name under C:\ where deleted/overwritten files are preserved.</p>
+      <div></div>
+      <p class="muted small setting-hint setting-warning">⚠ If EID 23 (FileDelete) is enabled, deleted files are archived here - disk usage grows with deletion volume, so filter carefully and monitor available space. For high-volume deletion monitoring without the storage overhead, use EID 26 (FileDeleteDetected) instead.</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="settingsCancelBtn">Cancel</button>
+      <button class="btn btn-primary" id="settingsSaveBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Help modal -->
+<div class="modal-overlay" id="helpModalOverlay" hidden>
+  <div class="modal modal-wide">
+    <h3>Help &amp; Manuals</h3>
+    <div class="help-body" id="helpBody">
+      <h4>What this is</h4>
+      <p>A visual editor for Sysmon configuration XML - browse, add, and edit detection rules
+      by event type without hand-writing XML, with live validation and change tracking.</p>
+
+      <h4>Include vs. Exclude</h4>
+      <p>Every event type (e.g. <code>ProcessCreate</code>) has two independent buckets:</p>
+      <ul>
+        <li><strong>Include</strong> - only events matching one of these rules get logged.</li>
+        <li><strong>Exclude</strong> - events matching one of these rules get filtered back out,
+        even if something in Include matched them.</li>
+      </ul>
+      <p>Rules within the same bucket are OR'd together - any single match is enough to trigger it.</p>
+
+      <h4>Flat rules vs. nested groups</h4>
+      <ul>
+        <li><strong>Flat rules</strong> sit directly under Include/Exclude, each one independent (OR logic).</li>
+        <li><strong>Nested groups</strong> (<code>+ Add Group</code>) bundle several conditions with their
+        own AND/OR relation - use AND when a detection needs multiple conditions true at once
+        (e.g. a specific parent image AND a specific command line).</li>
+      </ul>
+
+      <h4>Active schema</h4>
+      <p>The schema (top of the window) determines which event types, fields, and conditions are
+      offered while you edit, and what Validate checks against. Switch it to match the Sysmon
+      version you're targeting, or use <strong>Upload…</strong> to add one exported via
+      <code>sysmon.exe -s</code> for a version not already available.</p>
+
+      <h4>Global settings</h4>
+      <p>The <strong>Settings</strong> button (top right) covers config-wide options that apply to
+      the whole file, not any one event type:</p>
+      <ul>
+        <li><strong>Hash Algorithms</strong> - which hash(es) Sysmon computes for created/loaded
+        images (e.g. SHA256, MD5, IMPHASH, or all).</li>
+        <li><strong>Check Revocation</strong> - whether Sysmon checks a signed image's certificate
+        for revocation.</li>
+        <li><strong>DNS Lookup</strong> - whether Sysmon resolves IP addresses to hostnames in
+        network events.</li>
+        <li><strong>Archive Directory</strong> - the folder name (under <code>C:\</code>) where
+        deleted or overwritten files are preserved.</li>
+      </ul>
+
+      <h4>Changes, Apply, and Export</h4>
+      <ul>
+        <li>The <strong>Changes</strong> panel tracks every add/edit/delete since the file was
+        opened, and can revert any single change.</li>
+        <li><strong>Apply Changes</strong> accepts the current state as the new baseline and clears
+        that list - it's bookkeeping only, it does not touch your OS or the live Sysmon service.</li>
+        <li><strong>File → Export Bundle…</strong> downloads the config together with SHA256/MD5
+        hashes and a full changelog of everything applied - useful as an audit record before
+        handing a config off or deploying it.</li>
+      </ul>
+
+      <h4>Finding things</h4>
+      <p>Use the sidebar to jump between event types, <code>Filter rules…</code> to search within
+      one, and <strong>Validate</strong> to catch common mistakes (invalid conditions, fields not in
+      the active schema, empty rule groups) with a direct link to each one.</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="helpCloseBtn">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="app.js"></script>
+</body>
+</html>

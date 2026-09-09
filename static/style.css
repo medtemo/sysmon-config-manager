@@ -1,0 +1,1447 @@
+:root {
+  --bg: #0f1420;
+  --bg-elevated: #161d2e;
+  --bg-elevated-2: #1c2438;
+  --border: #2a3450;
+  --text: #e7ebf5;
+  --text-muted: #8b93ab;
+  --accent: #6c8cff;
+  --accent-hover: #85a0ff;
+  --accent-soft: rgba(108, 140, 255, 0.15);
+  --danger: #ff6b6b;
+  --danger-hover: #ff8787;
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --error: #f87171;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --mono: "Cascadia Mono", "Consolas", "SFMono-Regular", Menlo, monospace;
+  --sans: "Segoe UI", system-ui, -apple-system, "Inter", Roboto, sans-serif;
+}
+
+[data-theme="light"] {
+  --bg: #f4f6fb;
+  --bg-elevated: #ffffff;
+  --bg-elevated-2: #eef1f8;
+  --border: #dde3f0;
+  --text: #1b2333;
+  --text-muted: #667085;
+  --accent: #4361ee;
+  --accent-hover: #3651d4;
+  --accent-soft: rgba(67, 97, 238, 0.1);
+  --danger: #e0403f;
+  --danger-hover: #c93433;
+  --shadow: 0 8px 24px rgba(20, 30, 60, 0.08);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ---------- Top bar ---------- */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-mark {
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+}
+
+.brand-name {
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.2px;
+}
+
+.file-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  background: var(--bg-elevated-2);
+  border: 1px solid var(--border);
+  padding: 2px 10px;
+  border-radius: 999px;
+}
+
+.schema-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 1px solid var(--border);
+}
+
+.schema-badge-label {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* Schema switcher trigger is a plain .btn now, styled identically to the
+   File menu's own trigger button (see #schemaMenuDropdown in index.html) -
+   both are the same custom-dropdown pattern, not a native <select> (which
+   picks up author CSS for its own closed-state look fine, but browsers
+   mostly ignore it for the open options popup, rendering that with
+   OS/browser defaults instead - stark white against the rest of this dark
+   UI). */
+
+.schema-mismatch-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(251, 191, 36, 0.18);
+  color: var(--warning);
+  font-size: 13px;
+  cursor: help;
+}
+.schema-mismatch-badge[hidden] { display: none; }
+
+.count-pill {
+  display: inline-block;
+  min-width: 16px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--warning);
+  color: #1a1400;
+  font-size: 10.5px;
+  font-weight: 800;
+  line-height: 16px;
+  text-align: center;
+  margin-left: 4px;
+}
+
+.count-pill[hidden] { display: none; }
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---------- Buttons ---------- */
+
+.btn {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated-2);
+  color: var(--text);
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
+}
+
+.btn:hover { background: var(--accent-soft); border-color: var(--accent); }
+.btn:active { transform: translateY(1px); }
+
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+.btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+
+.btn-outline {
+  background: transparent;
+}
+.btn-outline.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn-danger {
+  background: transparent;
+  border-color: var(--danger);
+  color: var(--danger);
+}
+.btn-danger:hover { background: var(--danger); color: white; }
+
+.icon-btn {
+  border: 1px solid var(--border);
+  background: var(--bg-elevated-2);
+  color: var(--text);
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+}
+.icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ---------- File menu dropdown ---------- */
+
+.dropdown {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 170px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  padding: 6px;
+  z-index: 20;
+}
+.dropdown-menu[hidden] { display: none; }
+
+.dropdown-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 7px 10px;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.dropdown-item:hover { background: var(--accent-soft); color: var(--accent); }
+
+.dropdown-sep {
+  height: 1px;
+  background: var(--border);
+  margin: 5px 2px;
+}
+
+.help-body {
+  margin-top: 14px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+.help-body h4 {
+  margin: 18px 0 6px;
+  font-size: 13px;
+  color: var(--accent);
+}
+.help-body h4:first-child { margin-top: 0; }
+.help-body p { margin: 0 0 8px; font-size: 13px; line-height: 1.5; }
+.help-body ul { margin: 0 0 8px; padding-left: 18px; font-size: 13px; line-height: 1.55; }
+.help-body li { margin-bottom: 4px; }
+.help-body code {
+  background: var(--bg-elevated-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 12px;
+}
+
+.btn-sm {
+  padding: 4px 9px;
+  font-size: 12px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.btn-revert {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: transparent;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.btn-revert:hover { background: var(--accent); color: white; }
+
+/* ---------- Sidebar navigation ---------- */
+
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.sidebar.collapsed {
+  flex-basis: 0 !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  border-width: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sidebar-search {
+  padding: 10px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.sidebar-search input {
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-elevated-2);
+  color: var(--text);
+  font-size: 12.5px;
+}
+
+/* ---------- Pane dividers (drag to resize, click to collapse/expand) ---------- */
+
+.pane-divider {
+  flex-shrink: 0;
+  width: 12px;
+  position: relative;
+  cursor: col-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pane-divider::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: var(--border);
+  transition: background 0.12s ease, width 0.12s ease;
+}
+
+.pane-divider:hover::before, .pane-divider.dragging::before {
+  background: var(--accent);
+  width: 2px;
+}
+
+.divider-toggle {
+  position: relative;
+  z-index: 2;
+  width: 18px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated-2);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.12s ease, color 0.12s ease;
+}
+.divider-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+.event-tree {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 0 12px;
+}
+
+.event-category {
+  padding: 12px 14px 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+
+.event-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 14px;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  border-left: 3px solid transparent;
+}
+
+.event-item:hover { background: var(--accent-soft); color: var(--text); }
+
+.event-item.active {
+  background: var(--accent-soft);
+  border-left-color: var(--accent);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.event-item .event-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.event-item .count {
+  flex-shrink: 0;
+  background: var(--bg-elevated-2);
+  color: var(--text-muted);
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.event-item.active .count { background: var(--accent); color: white; }
+
+.event-tree-empty {
+  padding: 16px 14px;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+/* ---------- Layout ---------- */
+
+.content {
+  flex: 1;
+  display: flex;
+  gap: 10px;
+  padding: 14px 18px;
+  overflow: hidden;
+}
+
+.panel {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.rules-panel { flex: 1; min-width: 0; }
+.side-panel {
+  flex: 0 0 340px;
+  width: 340px;
+}
+.side-panel.collapsed {
+  flex-basis: 0 !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  border-width: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.panel-header {
+  padding: 16px 18px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-header h2 { margin: 0 0 2px; font-size: 16px; }
+.muted { color: var(--text-muted); font-size: 12.5px; margin: 0; }
+.muted.small { font-size: 11.5px; margin-top: 6px; }
+
+.panel-toolbar {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.panel-toolbar input[type="search"] {
+  flex: 1;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-elevated-2);
+  color: var(--text);
+  font-size: 13px;
+}
+
+.segmented {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.segment {
+  padding: 7px 14px;
+  background: var(--bg-elevated-2);
+  color: var(--text-muted);
+  border: none;
+  border-right: 1px solid var(--border);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.segment:last-child { border-right: none; }
+.segment:hover { color: var(--text); }
+.segment.active { background: var(--accent); color: white; }
+
+.rulegroups-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.rulegroup-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-elevated-2);
+  font-size: 11.5px;
+}
+
+.rulegroup-chip .rg-name {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.rulegroup-chip .segmented { transform: scale(0.85); transform-origin: left center; }
+
+/* ---------- Table ---------- */
+
+/* Column headers live in their own non-scrolling table above .table-wrap,
+   not inside it. A scrollbar's thumb size/position is calculated from the
+   scrolling container's total content height, and position:sticky elements
+   still count toward that height (they're only repositioned visually during
+   scroll, the browser has no notion of "this doesn't really count") - so as
+   long as the column headers lived inside .table-wrap, the thumb always
+   reflected their height too, even though they never actually scroll away.
+   Pulling them out entirely is the only way to make the scrollbar (and the
+   apparent "start" of the content) line up with where the rows actually
+   begin. The Include/Exclude section headers stay inside .table-wrap on
+   purpose - unlike the column headers, they're real content that's meant to
+   scroll past once you leave their section, not permanent chrome. */
+.rules-header-wrap {
+  flex-shrink: 0;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+}
+.rules-header-wrap table { border-bottom: none; }
+
+.table-wrap { position: relative; flex: 1; overflow: auto; overflow-anchor: none; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
+
+thead th {
+  position: relative;
+  text-align: left;
+  padding: 9px 14px;
+  background: var(--bg-elevated-2);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  border-bottom: 1px solid var(--border);
+  /* box-shadow as a backup to border-bottom: when multiple sticky <th> cells
+     in the same row sit at different width units (one fixed px, the rest %),
+     the browser can round each cell's sticky sub-pixel offset slightly
+     differently once scrolling engages sticky positioning, leaving a hairline
+     gap under just that one cell even though border-bottom looks fine at
+     rest. box-shadow is painted inside the box rather than going through the
+     same per-cell border math, so it stays solid regardless. */
+  box-shadow: inset 0 -1px 0 0 var(--border);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* z-index above the sticky section-header rows below (10 and down), so a
+   section row scrolling up under the column headers is always clipped by
+   them rather than painting over them. */
+#headerRow th { cursor: pointer; user-select: none; }
+#headerRow th:hover { color: var(--text); }
+#headerRow th.col-actions-header { cursor: default; }
+#headerRow th:not([data-col]):not(.col-actions-header) { cursor: default; }
+#headerRow th:not([data-col]):not(.col-actions-header):hover { color: var(--text-muted); }
+
+.sort-ind { margin-left: 4px; opacity: 0.6; font-size: 10px; }
+#headerRow th.sorted-asc .sort-ind::after { content: "▲"; }
+#headerRow th.sorted-desc .sort-ind::after { content: "▼"; }
+
+.col-resizer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  cursor: col-resize;
+  z-index: 3;
+}
+.col-resizer:hover, .col-resizer.resizing { background: var(--accent); }
+
+/* Column-filter toolbar: a plain static row in the panel header (NOT inside
+   the scrollable table), so it stays visible while scrolling through flat
+   rules AND the nested groups section below - sticky-within-the-table used
+   to make it vanish once you scrolled past the table itself. Toggling it
+   just shows/hides this block; no scroll position side-effects needed. */
+.filter-toolbar {
+  display: flex;
+  margin-top: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.filter-toolbar[hidden] { display: none; }
+
+.ft-cell {
+  padding: 5px 8px;
+  background: var(--bg-elevated-2);
+  border-right: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.ft-cell:last-child { border-right: none; }
+.ft-cell:nth-child(1) { width: 11%; } /* keep in step with the Group column above */
+.ft-cell:nth-child(2) { width: 8%; }
+.ft-cell:nth-child(3) { width: 11%; }
+.ft-cell:nth-child(4) { width: 9%; }
+.ft-cell.ft-value { flex: 1; }
+.ft-cell:nth-child(6) { width: 12%; }
+.ft-cell:nth-child(7) { width: 10%; }
+.ft-cell:nth-child(8) { width: 10%; }
+.ft-cell.ft-actions { width: 148px; display: flex; align-items: center; }
+
+.filter-toolbar input, .filter-toolbar select {
+  width: 100%;
+  padding: 4px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text);
+  font-size: 11.5px;
+}
+
+tbody td {
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Sensible default column widths so table-layout:fixed doesn't evenly split
+   short badge-only columns (Match/Status) the same as free-text ones,
+   squeezing them into clipping - which reads as a broken/interrupted row line.
+   Percentages (not px) so Value - the most important column - keeps a fair,
+   responsive share of whatever room is available (e.g. after collapsing the
+   side panel) instead of a fixed leftover that can shrink to near-nothing.
+   Kept in sync with the .ft-cell widths above, and with the <colgroup> on
+   #rulesTable (the header and body are two separate <table>s now - see
+   .rules-header-wrap above - so their column widths have to be set in two
+   places and kept identical for the columns to line up). */
+#rulesHeaderTable #headerRow th:nth-child(1) { width: 11%; }   /* Group - 3% wider than
+   the other narrow columns to pay for the section tree's indent, so the group
+   name still fits beside it. Value (col 5, no width) absorbs the difference. */
+#rulesHeaderTable #headerRow th:nth-child(2) { width: 8%; }    /* Match */
+#rulesHeaderTable #headerRow th:nth-child(3) { width: 11%; }   /* Field */
+#rulesHeaderTable #headerRow th:nth-child(4) { width: 9%; }    /* Condition */
+#rulesHeaderTable #headerRow th:nth-child(6) { width: 12%; }   /* Technique */
+#rulesHeaderTable #headerRow th:nth-child(7) { width: 10%; }   /* Comment */
+#rulesHeaderTable #headerRow th:nth-child(8) { width: 10%; }   /* Status */
+#rulesHeaderTable #headerRow th:nth-child(9) { width: 148px; } /* Actions - fits 4×26px icons + gaps + padding */
+/* Value (5th) intentionally left unset - it absorbs remaining table width. */
+
+/* Badges (Match/Status) are short fixed vocabulary - never truncate them.
+   Tighter cell padding (rather than letting them overflow into the next
+   column, which used to visually cover the Actions column's Revert button)
+   gives them enough real room within their own column. */
+#rulesTable tbody td:nth-child(2), #rulesTable tbody td:nth-child(8) {
+  overflow: hidden;
+  text-overflow: clip;
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+/* Actions column: icons, not text, so it needs its own tighter padding too -
+   the default 14px/side text padding left only 92px for 116px of icons. */
+#rulesTable tbody td:nth-child(9) {
+  overflow: visible;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+tbody tr:hover { background: var(--accent-soft); }
+
+.status-cell-badge {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.status-cell-badge.added { background: rgba(74, 222, 128, 0.18); color: var(--success); }
+.status-cell-badge.modified { background: rgba(251, 191, 36, 0.18); color: var(--warning); }
+.status-cell-badge.deleted { background: rgba(248, 113, 113, 0.18); color: var(--error); }
+.status-cell-badge.unchanged { color: var(--text-muted); background: var(--bg-elevated-2); }
+
+/* ---------- Diff highlighting ---------- */
+
+tr.diff-added, .group-card.diff-added {
+  background: rgba(74, 222, 128, 0.08);
+  border-left: 3px solid var(--success);
+}
+tr.diff-modified, .group-card.diff-modified {
+  background: rgba(251, 191, 36, 0.08);
+  border-left: 3px solid var(--warning);
+}
+tr.diff-deleted, .group-card.diff-deleted {
+  background: rgba(248, 113, 113, 0.07);
+  border-left: 3px solid var(--error);
+  opacity: 0.75;
+}
+tr.diff-deleted td:not(.row-actions) { text-decoration: line-through; text-decoration-color: var(--error); }
+
+.diff-tag {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 9.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-right: 6px;
+}
+.diff-tag-added { background: rgba(74, 222, 128, 0.18); color: var(--success); }
+.diff-tag-modified { background: rgba(251, 191, 36, 0.18); color: var(--warning); }
+.diff-tag-deleted { background: rgba(248, 113, 113, 0.18); color: var(--error); }
+
+.changes-list-item {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+  font-size: 12.5px;
+}
+
+.changes-list-item .cli-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.changes-list-item .cli-actions-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.changes-list-item .cli-loc {
+  color: var(--text-muted);
+  font-size: 11px;
+  margin-bottom: 6px;
+}
+
+.changes-list-item .cli-detail {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--text);
+}
+
+.changes-list-item .cli-arrow { color: var(--text-muted); margin: 0 4px; }
+
+.value-cell { font-family: var(--mono); font-size: 12.5px; overflow-wrap: anywhere; }
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-include { background: rgba(74, 222, 128, 0.15); color: var(--success); }
+.badge-exclude { background: rgba(251, 191, 36, 0.15); color: var(--warning); }
+
+/* ---------- Include/Exclude section headers (flat rules table) ---------- */
+
+.section-header-row td {
+  padding: 10px 14px;
+  background: var(--bg-elevated-2);
+  border-bottom: 1px solid var(--border);
+  border-top: 1px solid var(--border);
+}
+.section-header-row:first-child td { border-top: none; }
+
+/* The Include/Exclude section headers pin to the top of the table with
+   native position:sticky. It goes on the <td>, not the <tr> - Chrome
+   ignores sticky on a table row, which is what an earlier attempt here hit
+   and mistook for sticky not working in this nested-flex layout at all. On
+   the cell it behaves exactly like #headerRow th above.
+
+   Sticking on the compositor is the whole point: a JS-positioned overlay
+   can only be moved after the scrolled frame has already been painted, so
+   it always lagged the scroll by a frame. This does not.
+
+   The `top` offset and z-index of each row are written by
+   applyStickySectionOffsets() in app.js, because they depend on measured
+   heights - the sections stack, so Exclude rests under Include, which rests
+   under the column headers. */
+#rulesTbody .section-header-row td { position: sticky; }
+
+.section-collapse-btn {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 10px;
+  line-height: 1;
+}
+.section-collapse-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+.section-label {
+  font-weight: 700;
+  font-size: 12.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-right: 8px;
+}
+.section-label-include { color: var(--success); }
+.section-label-exclude { color: var(--warning); }
+
+.section-count {
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-right: 12px;
+}
+
+.section-ornote {
+  font-size: 11.5px;
+  margin-right: 12px;
+}
+
+.section-comment {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  font-style: italic;
+  cursor: help;
+}
+
+/* ---------- Section tree (rules as children of Include/Exclude) ---------- */
+
+/* Rules and nested-group cards are children of their Include/Exclude header,
+   so they're drawn hanging off it rather than sitting loose in the table:
+   each one is indented and connected to a vertical spine by a short elbow,
+   in the section's own colour. The spine is deliberately aligned to the
+   centre of the section header's collapse chevron (14px padding + half of
+   the 20px button = 24px), so the whole section reads as one branch from
+   the control that opens and closes it.
+
+   Drawn as a pseudo-element on the row's first cell rather than as a
+   border-left, because border-left on these rows is already spoken for by
+   the added/modified/deleted diff tint. */
+#rulesTbody tr.sec-child > td:first-child {
+  position: relative;
+  padding-left: 38px;
+  /* Chrome paints a table's collapsed borders above everything inside the
+     cell - including positioned descendants, whatever their z-index - so
+     the row separator was chopping a 1px hole through the spine on every
+     row and the branch read as a dashed line. `hidden` wins collapsed-border
+     conflict resolution outright, so it suppresses the shared separator for
+     this column only; the inset shadow then redraws that same 1px line as
+     part of the cell's own background, which the spine is free to cross. */
+  border-bottom-style: hidden;
+  box-shadow: inset 0 -1px 0 0 var(--border);
+}
+/* z-index lifts the connector out of the cell's content layer into a
+   positioned one. With border-collapse, the table paints its collapsed
+   borders AFTER cell content, so at z-index auto every row's 1px separator
+   chopped a gap through the spine and it read as a dashed line rather than
+   a continuous branch.
+
+   The spine and the elbow tick used to be two separate pseudo-elements
+   (::before + ::after), deliberately overlapping where they meet so no
+   sub-pixel rounding gap could open up between them (see the git history for
+   the full reasoning). But --tree-line is a semi-transparent colour
+   (color-mix ... transparent below), and painting it twice in that overlap
+   square compounds the alpha - the corner came out visibly darker than the
+   rest of the line, a seam in the opposite direction from the gap the
+   overlap was meant to prevent.
+   
+   A single element can't have that problem: clip-path traces the whole
+   spine+tick outline as one shape, so the fill (one solid background colour)
+   only ever gets painted once, everywhere, with no separate boxes to
+   misalign or double up in the first place. The overlap margins (-2px /
+   +2px) are kept for the same anti-gap reason as before - clip-path just
+   means they're extending a single fill instead of two independent ones. */
+#rulesTbody tr.sec-child > td:first-child::before {
+  content: "";
+  position: absolute;
+  left: 21px;
+  top: -2px;
+  bottom: -2px;
+  width: 11px;
+  background: var(--tree-line);
+  z-index: 1;
+  /* T-shape (spine runs the full height, tick branches off at the vertical
+     centre): outline traced clockwise from the spine's top-left. */
+  clip-path: polygon(
+    2px 0, 4px 0,
+    4px calc(50% - 1px), 11px calc(50% - 1px),
+    11px calc(50% + 1px), 4px calc(50% + 1px),
+    4px 100%, 2px 100%
+  );
+}
+/* Last child: reverted to the original two-piece approach (truncated spine
+   + separate tick) rather than the T/L clip-path shape above - kept exactly
+   as it looked before that change, seam and all, per explicit request. Only
+   the non-last (through-line) rows use the clip-path fix now. */
+#rulesTbody tr.sec-child-last > td:first-child::before {
+  left: 23px;
+  width: 2px;
+  bottom: auto;
+  height: calc(50% + 2px);
+  clip-path: none;
+}
+#rulesTbody tr.sec-child-last > td:first-child::after {
+  content: "";
+  position: absolute;
+  left: 23px;
+  top: 50%;
+  width: 9px;
+  height: 2px;
+  background: var(--tree-line);
+  z-index: 1;
+}
+/* color-mix rather than a hardcoded rgba so the spine follows whatever
+   --success/--warning resolve to in the active theme. */
+#rulesTbody tr.sec-child-include { --tree-line: color-mix(in srgb, var(--success) 40%, transparent); }
+#rulesTbody tr.sec-child-exclude { --tree-line: color-mix(in srgb, var(--warning) 40%, transparent); }
+
+/* The nested-group card is a child of the section too, but it carries its
+   own header and left-border connector, so it only needs the indent and the
+   elbow reaching across to it - the card's own edge continues the line. */
+#rulesTbody tr.group-card-row > td:first-child { padding-left: 38px; }
+
+.section-empty {
+  padding: 14px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 12.5px;
+}
+
+.group-card-row td {
+  padding: 10px 14px;
+  border-bottom: none;
+}
+
+.scroll-top-btn {
+  position: fixed; /* coordinates set via JS to match .table-wrap's live bounding rect - see
+                       updateStickySectionBar()'s comment for why position:absolute doesn't
+                       hold up reliably in this layout */
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  font-size: 14px;
+  z-index: 15; /* above the table and its sticky headers, but below the File
+                  dropdown (20) and modals (50/100). */
+  opacity: 0.85;
+  transition: opacity 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+.scroll-top-btn:hover { opacity: 1; border-color: var(--accent); color: var(--accent); }
+.scroll-top-btn[hidden] { display: none; }
+
+.section-group-actions {
+  float: right;
+  display: inline-flex;
+  gap: 6px;
+}
+
+.row-actions {
+  vertical-align: middle;
+}
+
+.row-actions-inner {
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+.icon-btn-sm {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  padding: 0;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated-2);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.icon-btn-sm:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.icon-btn-sm.danger:hover { border-color: var(--error); color: var(--error); background: rgba(248, 113, 113, 0.1); }
+.icon-btn-sm.revert { border-color: var(--accent); color: var(--accent); }
+.icon-btn-sm.revert:hover { background: var(--accent); color: white; }
+
+.field-warning {
+  border-bottom: 2px dashed var(--warning);
+  cursor: help;
+}
+.field-warning-icon { color: var(--warning); margin-left: 4px; font-size: 11px; cursor: help; }
+
+.empty-state {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 40px 20px;
+}
+
+.technique-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--accent-soft);
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+/* ---------- Nested rule groups ---------- */
+
+.groups-section {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border);
+}
+
+.groups-heading-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.groups-heading {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.groups-heading-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.group-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 14px;
+  overflow: hidden;
+  background: var(--bg-elevated-2);
+}
+
+.group-collapse-btn {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 11px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.group-collapse-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+.group-collapsed-summary {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.group-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border);
+}
+
+.group-card.collapsed .group-card-header { border-bottom: none; }
+
+.badge-relation {
+  background: rgba(108, 140, 255, 0.18);
+  color: var(--accent);
+}
+
+.group-title {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.group-meta {
+  font-size: 11.5px;
+}
+
+.group-diff-subtitle {
+  padding: 0 14px 8px;
+  margin-top: -6px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--warning);
+}
+
+@keyframes jumpPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(108, 140, 255, 0); }
+  20% { box-shadow: 0 0 0 4px rgba(108, 140, 255, 0.55); }
+  60% { box-shadow: 0 0 0 2px rgba(108, 140, 255, 0.35); }
+}
+
+tr.jump-highlight { animation: jumpPulse 1.6s ease-out; position: relative; z-index: 1; }
+.group-card.jump-highlight { animation: jumpPulse 1.6s ease-out; }
+
+.group-card-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+}
+
+.group-table-wrap {
+  position: relative;
+  padding-left: 10px;
+  border-left: 3px solid var(--accent);
+  margin: 2px 10px 2px 0;
+}
+
+.group-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.group-table thead th {
+  position: static;
+  text-align: left;
+  padding: 7px 10px;
+  background: transparent;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  border-bottom: 1px solid var(--border);
+}
+
+.group-table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.group-table tr:last-child td { border-bottom: none; }
+.group-table tr:hover { background: var(--accent-soft); }
+
+/* ---------- Side panel ---------- */
+
+.side-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.side-tab {
+  flex: 1;
+  padding: 12px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+
+.side-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.code-box {
+  flex: 1;
+  margin: 0;
+  padding: 14px;
+  overflow: auto;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre;
+  color: var(--text);
+}
+
+.validate-box {
+  flex: 1;
+  overflow: auto;
+  padding: 14px;
+}
+
+.changes-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.changes-toolbar {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.changes-toolbar input[type="search"] {
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-elevated-2);
+  color: var(--text);
+  font-size: 13px;
+}
+
+.changes-panel .validate-box {
+  flex: 1;
+}
+
+.issue {
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+  font-size: 12.5px;
+  border-left: 3px solid var(--border);
+}
+.issue-error { border-left-color: var(--error); background: rgba(248, 113, 113, 0.08); }
+.issue-warning { border-left-color: var(--warning); background: rgba(251, 191, 36, 0.08); }
+.issue-loc { color: var(--text-muted); font-size: 11px; margin-top: 3px; }
+.issue-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.issue-msg { flex: 1; }
+.issue-ok { color: var(--success); font-weight: 600; }
+
+/* ---------- Status bar ---------- */
+
+.statusbar {
+  padding: 6px 18px;
+  font-size: 12px;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  background: var(--bg-elevated);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.status-stats {
+  font-family: var(--mono);
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- Thin scrollbars everywhere ---------- */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+*::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ---------- Modals ---------- */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 8, 16, 0.55);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.modal-overlay[hidden] { display: none; }
+
+.modal {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px 24px;
+  width: 460px;
+  max-width: 92vw;
+}
+
+.modal-wide { width: 760px; }
+
+.modal h3 { margin: 0 0 4px; font-size: 16px; }
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 10px 12px;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.form-grid label { font-size: 12.5px; color: var(--text-muted); }
+
+.form-grid input[type="text"],
+.form-grid select {
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-elevated-2);
+  color: var(--text);
+  font-size: 13px;
+  width: 100%;
+}
+
+.radio-row { display: flex; gap: 14px; }
+.radio { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--text); }
+
+.checkbox-row { display: flex; flex-wrap: wrap; gap: 12px; }
+.checkbox { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--text); }
+
+.settings-form-grid { row-gap: 6px; }
+.setting-hint { grid-column: 2; margin: -4px 0 8px; }
+.setting-warning { color: #e0a030; }
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+/* ---------- Templates modal ---------- */
+
+.template-layout {
+  display: flex;
+  gap: 14px;
+  margin-top: 14px;
+  height: 380px;
+}
+
+.template-list {
+  width: 280px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.template-category {
+  padding: 8px 12px 4px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.template-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 12.5px;
+  border-left: 3px solid transparent;
+}
+.template-item:hover { background: var(--accent-soft); }
+.template-item.active { background: var(--accent-soft); border-left-color: var(--accent); }
+.template-item .mitre { color: var(--accent); font-weight: 700; margin-right: 6px; }
+
+.template-detail {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+}
+
+.template-detail h4 { margin: 0 0 4px; }
+.template-detail .tags { margin: 8px 0 12px; }
+.template-detail pre {
+  background: var(--bg-elevated-2);
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  overflow-x: auto;
+}
+
+/* ---------- Toast ---------- */
+
+.toast {
+  position: fixed;
+  bottom: 44px;
+  right: 20px;
+  background: var(--bg-elevated-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  font-size: 13px;
+  z-index: 100;
+  max-width: 420px;
+}
+
+.toast.error { border-color: var(--error); color: var(--error); }
+.toast.success { border-color: var(--success); color: var(--success); }

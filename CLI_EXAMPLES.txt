@@ -1,0 +1,86 @@
+SYSTEM MONITOR (SYSMON) CLI PARAMETERS REFERENCE & EXAMPLES
+===========================================================
+
+ADMINISTRATIVE NOTES:
+- Operations require an elevated Command Prompt or PowerShell session.
+- Options can be combined (e.g., sysmon.exe -accepteula -i config.xml).
+
+
+1. SYSTEM MANAGEMENT PARAMETERS
+--------------------------------
+-accepteula
+    Automatically accepts the Sysinternals license agreement.
+    Syntax:  sysmon.exe -accepteula
+    Example: sysmon.exe -accepteula -i
+
+-i [configfile]
+    Installs the Sysmon service and kernel driver. Takes an optional XML configuration file.
+    Syntax:  sysmon.exe -i [configfile_path]
+    Example: sysmon.exe -accepteula -i C:\Windows\config.xml
+
+-c [configfile | --]
+    Applies a new configuration file to a running Sysmon service, dumps the current configuration 
+    if no path is provided, or resets to defaults using '--'.
+    Syntax:  sysmon.exe -c [configfile_path]
+    Reset:   sysmon.exe -c --
+    Example: sysmon.exe -c C:\Security\sysmon_v2.xml
+
+-u [force]
+    Uninstalls the Sysmon service and driver. The 'force' flag ignores uninstallation errors.
+    Syntax:  sysmon.exe -u [force]
+    Example: sysmon.exe -u force
+
+-m  (Windows Only)
+    Installs the event manifest into the system registry (implicitly run during -i).
+    Syntax:  sysmon.exe -m
+    Example: sysmon.exe -m
+
+-s [version]
+    Prints the XML configuration schema definition to the console.
+    Syntax:  sysmon.exe -s [schema_version]
+    Example: sysmon.exe -s 4.90
+
+-t  (Windows Only)
+    Launches Sysmon in debug mode.
+    Syntax:  sysmon.exe -t [configfile_path]
+    Example: sysmon.exe -t C:\Windows\config.xml
+
+-nologo  (Windows Only)
+    Suppresses the Sysmon banner/logo from command-line output.
+    Syntax:  sysmon.exe -nologo
+    Example: sysmon.exe -nologo -c
+
+
+2. DRIVER & INLINE CONFIGURATION PARAMETERS
+-------------------------------------------
+These flags are used alongside -i (install) or -c (update configuration) to adjust runtime driver parameters:
+
+-d <drivername>  (Windows Only)
+    Renames the Sysmon kernel driver during installation (maximum 8 characters).
+    Syntax:  sysmon.exe -i -d <drivername>
+    Example: sysmon.exe -accepteula -i -d SysDrvMon
+
+-h <algorithm>  (Windows Only)
+    Specifies image hashing algorithm(s): sha1, sha256 (sha2), md5, imphash, or * (all).
+    Syntax:  sysmon.exe -c -h <sha1|sha2|md5|imphash|*>
+    Example: sysmon.exe -c -h md5,sha256
+
+-r  (Windows Only)
+    Enables signature certificate revocation checks for loaded drivers/images.
+    Syntax:  sysmon.exe -c -r
+    Example: sysmon.exe -c -r
+
+-n [<process,...>]
+    Enables tracking of network connections globally or for specified processes.
+    Syntax:  sysmon.exe -c -n [<process,...>]
+    Example: sysmon.exe -c -n powershell.exe,cmd.exe
+
+-k [<process,...>]  (Windows Only)
+    Tracks process access operations (memory handle requests) for specified target processes.
+    Syntax:  sysmon.exe -c -k [<process,...>]
+    Example: sysmon.exe -c -k lsass.exe
+
+-l [<process,...>]  (Windows Only)
+    Tracks DLL/module load events for specified processes.
+    Syntax:  sysmon.exe -c -l [<process,...>]
+    Example: sysmon.exe -c -l svchost.exe
