@@ -44,11 +44,8 @@ Then open **http://127.0.0.1:5000** in your browser.
 - **Apply Changes** (UI button) — accepts the current state as the new
   baseline; bookkeeping only, does not touch your OS or the Sysmon
   service.
-- **Real Sysmon apply** (`apply.py`, `POST /api/apply`) — actually runs
-  `sysmon.exe -c <path>` (Windows, needs Administrator). Available via
-  the API; not yet wired to a UI button.
 - **Export Bundle** — config + SHA256/MD5 hashes + changelog, as a zip.
-- Save / Open / Download, dark/light theme toggle.
+- **Save / Open / Download, dark/light theme toggle**.
 
 ## Project layout
 
