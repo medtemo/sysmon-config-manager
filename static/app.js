@@ -3,7 +3,6 @@
 const state = {
   schema: null,        // { active_version, tags: [...], conditions: [...], onmatch_values: [...] }
   schemas: [],          // [{version, source, event_count, active}, ...]
-  templatesByCat: {},  // { category: [template, ...] }
   cfg: null,           // serialized SysmonConfig from /api/state
   diff: { rules: {}, groups: {}, settings: {} },  // from /api/diff, keyed by uid (string keys, JSON-side)
   onmatchFilter: "all", // "all" | "include" | "exclude"
@@ -12,7 +11,6 @@ const state = {
   targetGroupUid: null,  // set when adding/duplicating a rule INTO a specific nested Rule sub-group
   editingGroupUid: null, // set when the group modal is editing an existing nested group in place
   duplicateSourceGroupUid: null, // set when the group modal is duplicating (review-before-create)
-  selectedTemplateId: null,
   pathModalMode: null, // "open" | "save"
   sidebarCollapsed: false,
   sidePanelCollapsed: false,
@@ -102,11 +100,6 @@ async function init() {
   try {
     state.schema = await api("/api/schema");
     state.schemas = await api("/api/schemas");
-    const tmpl = await api("/api/templates");
-    state.templatesByCat = {};
-    for (const t of tmpl) {
-      (state.templatesByCat[t.category] ||= []).push(t);
-    }
     state.cfg = await api("/api/state");
   } catch (err) {
     toast("Failed to load app: " + err.message, "error");
@@ -1312,74 +1305,6 @@ async function saveGroupModal() {
 }
 
 // ---------------------------------------------------------------------------
-// Templates modal
-// ---------------------------------------------------------------------------
-
-function openTemplatesModal() {
-  const list = $("templateList");
-  list.innerHTML = "";
-  for (const [category, items] of Object.entries(state.templatesByCat)) {
-    const catEl = document.createElement("div");
-    catEl.className = "template-category";
-    catEl.textContent = category;
-    list.appendChild(catEl);
-    for (const t of items) {
-      const item = document.createElement("div");
-      item.className = "template-item";
-      item.innerHTML = `<span class="mitre">${escapeHtml(t.mitre_id)}</span>${escapeHtml(t.name)}`;
-      item.onclick = () => selectTemplate(t.id, item);
-      list.appendChild(item);
-    }
-  }
-  $("templateDetail").innerHTML = '<p class="muted">Select a template to preview it.</p>';
-  $("templateInsertBtn").disabled = true;
-  state.selectedTemplateId = null;
-  $("templatesModalOverlay").hidden = false;
-}
-
-function findTemplate(id) {
-  for (const items of Object.values(state.templatesByCat)) {
-    const found = items.find((t) => t.id === id);
-    if (found) return found;
-  }
-  return null;
-}
-
-function selectTemplate(id, itemEl) {
-  document.querySelectorAll(".template-item.active").forEach((e) => e.classList.remove("active"));
-  itemEl.classList.add("active");
-  state.selectedTemplateId = id;
-  $("templateInsertBtn").disabled = false;
-
-  const t = findTemplate(id);
-  const snippet = [`<${t.tag} onmatch="${t.onmatch}">`,
-    ...t.rules.map((r) => `\t<${r.field} condition="${r.condition}">${escapeHtml(r.value)}</${r.field}>` +
-      (r.comment ? ` <!--${escapeHtml(r.comment)}-->` : "")),
-    `</${t.tag}>`].join("\n");
-
-  $("templateDetail").innerHTML = `
-    <h4>${escapeHtml(t.name)}</h4>
-    <div class="tags muted">${escapeHtml(t.mitre_id)} — ${escapeHtml(t.mitre_name)}</div>
-    <p>${escapeHtml(t.description)}</p>
-    <p class="muted small">Will add to &lt;${escapeHtml(t.tag)} onmatch="${escapeHtml(t.onmatch)}"&gt;:</p>
-    <pre>${escapeHtml(snippet)}</pre>`;
-}
-
-async function insertSelectedTemplate() {
-  if (!state.selectedTemplateId) return;
-  try {
-    state.cfg = await api(`/api/templates/${encodeURIComponent(state.selectedTemplateId)}/insert`, { method: "POST" });
-    const t = findTemplate(state.selectedTemplateId);
-    state.currentTag = t.tag;
-    $("templatesModalOverlay").hidden = true;
-    renderAll();
-    setStatus(`Inserted template "${t.name}" (${t.mitre_id}) into <${t.tag}>.`);
-  } catch (err) {
-    toast(err.message, "error");
-  }
-}
-
-// ---------------------------------------------------------------------------
 // Preview / Validate side panel
 // ---------------------------------------------------------------------------
 
@@ -1863,9 +1788,6 @@ function bindGlobalEvents() {
   };
   $("groupSaveBtn").onclick = saveGroupModal;
 
-  $("templatesCloseBtn").onclick = () => { $("templatesModalOverlay").hidden = true; };
-  $("templateInsertBtn").onclick = insertSelectedTemplate;
-
   $("pathCancelBtn").onclick = () => { $("pathModalOverlay").hidden = true; };
   $("pathConfirmBtn").onclick = confirmPathModal;
 
@@ -1876,7 +1798,6 @@ function bindGlobalEvents() {
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       $("ruleModalOverlay").hidden = true;
-      $("templatesModalOverlay").hidden = true;
       $("pathModalOverlay").hidden = true;
       $("groupModalOverlay").hidden = true;
       $("settingsModalOverlay").hidden = true;

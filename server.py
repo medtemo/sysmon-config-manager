@@ -3,7 +3,7 @@ server.py
 
 Flask backend for the Sysmon Config Manager web UI. Serves a small REST API
 over the same UI-agnostic logic used previously by the Tkinter version
-(schema.py, model.py, xml_io.py, validator.py, templates.py, apply.py) plus
+(schema.py, model.py, xml_io.py, validator.py, apply.py) plus
 the static HTML/CSS/JS frontend in static/.
 
 Run with:  python3 server.py [path/to/config.xml]
@@ -23,7 +23,6 @@ from flask import Flask, jsonify, request, send_from_directory, Response
 import xml_io
 import validator
 import apply as apply_mod
-import templates as templates_mod
 import diff as diff_mod
 import schema_loader
 from schema_registry import SchemaRegistry
@@ -114,24 +113,6 @@ def serialize_schema():
     }
 
 
-def serialize_templates():
-    out = []
-    for t in templates_mod.BUILTIN_TEMPLATES:
-        out.append({
-            "id": t.template_id,
-            "name": t.name,
-            "mitre_id": t.mitre_id,
-            "mitre_name": t.mitre_name,
-            "category": t.category,
-            "tag": t.tag,
-            "onmatch": t.onmatch,
-            "description": t.description,
-            "rules": [{"field": f, "condition": c, "value": v, "comment": cm}
-                      for f, c, v, cm in t.rules],
-        })
-    return out
-
-
 def serialize_issues(issues):
     return [{"severity": i.severity, "message": i.message, "location": i.location,
               "kind": i.kind, "uid": i.uid, "tag": i.tag}
@@ -185,11 +166,6 @@ def api_schemas_upload():
         return jsonify({"error": str(exc)}), 400
     registry.register(manifest, activate=True)
     return jsonify({"schema": serialize_schema(), "schemas": registry.list_summary()})
-
-
-@app.route("/api/templates")
-def api_templates():
-    return jsonify(serialize_templates())
 
 
 @app.route("/api/state")
@@ -610,25 +586,6 @@ def api_revert_group(group_uid):
             cfg.restore_group(group_uid, b["tag"], b["onmatch"], b["group_name"],
                                b["name"], b["group_relation"], b["rules"])
         return jsonify(serialize_config(cfg, _state["current_path"]))
-
-
-# ---------------------------------------------------------------------------
-# Templates
-# ---------------------------------------------------------------------------
-
-@app.route("/api/templates/<template_id>/insert", methods=["POST"])
-def api_insert_template(template_id):
-    try:
-        t = templates_mod.get_template(template_id)
-    except KeyError:
-        return jsonify({"error": f"Unknown template '{template_id}'"}), 404
-    with _lock:
-        for f, cond, val, comment in t.rules:
-            _state["cfg"].add_rule(
-                t.tag, t.onmatch, f, cond, val,
-                comment=comment or f"Template: {t.mitre_id} {t.name}", group_name="",
-            )
-        return jsonify(serialize_config(_state["cfg"], _state["current_path"]))
 
 
 # ---------------------------------------------------------------------------

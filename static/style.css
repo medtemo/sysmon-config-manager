@@ -1371,61 +1371,6 @@ tr.jump-highlight { animation: jumpPulse 1.6s ease-out; position: relative; z-in
   margin-top: 20px;
 }
 
-/* ---------- Templates modal ---------- */
-
-.template-layout {
-  display: flex;
-  gap: 14px;
-  margin-top: 14px;
-  height: 380px;
-}
-
-.template-list {
-  width: 280px;
-  overflow-y: auto;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  flex-shrink: 0;
-}
-
-.template-category {
-  padding: 8px 12px 4px;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  color: var(--text-muted);
-  font-weight: 700;
-}
-
-.template-item {
-  padding: 8px 12px;
-  cursor: pointer;
-  font-size: 12.5px;
-  border-left: 3px solid transparent;
-}
-.template-item:hover { background: var(--accent-soft); }
-.template-item.active { background: var(--accent-soft); border-left-color: var(--accent); }
-.template-item .mitre { color: var(--accent); font-weight: 700; margin-right: 6px; }
-
-.template-detail {
-  flex: 1;
-  overflow-y: auto;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 16px;
-}
-
-.template-detail h4 { margin: 0 0 4px; }
-.template-detail .tags { margin: 8px 0 12px; }
-.template-detail pre {
-  background: var(--bg-elevated-2);
-  padding: 10px;
-  border-radius: var(--radius-sm);
-  font-family: var(--mono);
-  font-size: 11.5px;
-  overflow-x: auto;
-}
-
 /* ---------- Toast ---------- */
 
 .toast {
